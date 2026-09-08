@@ -1,0 +1,12 @@
+services:
+  visitor:
+    build: .
+    image: visitor-api:v1
+    container_name: visitor-api
+    restart: always
+    network_mode: host
+    ports:
+      - "8094:8094"
+    voliumes:
+      - /var/logs:/logs
+      - /tmp:/tmp

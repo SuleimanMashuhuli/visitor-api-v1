@@ -1,0 +1,67 @@
+package com.abcbank.visitor.controllers;
+
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.abcbank.visitor.domain.dto.VisitorRequestDto;
+import com.abcbank.visitor.domain.dto.VisitorResponseDto;
+import com.abcbank.visitor.services.VisitorService;
+
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
+@RestController 
+@RequestMapping(path = "/api/v1/visitors")
+@RequiredArgsConstructor 
+@RolesAllowed({"SYSTEM_ADMIN", "SECURITY_ADMIN", "SECURITY_OFFICER"})
+public class VisitorController {
+    private final VisitorService visitorService;
+
+    @PostMapping 
+    public ResponseEntity<VisitorResponseDto> create(@Valid @RequestBody VisitorRequestDto visitorRequestDto) {
+        VisitorResponseDto responseDto = visitorService.createVisitor(visitorRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    }
+
+    @GetMapping 
+    public ResponseEntity<List<VisitorResponseDto>> getAll() {
+        List<VisitorResponseDto> response = visitorService.getAllVisitors();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<VisitorResponseDto> get(@PathVariable Integer visitorId) {
+        VisitorResponseDto responseDto = visitorService.getVisitor(visitorId);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<VisitorResponseDto> update(@PathVariable Integer visitorId, @RequestBody VisitorRequestDto visitorRequestDto) {
+        VisitorResponseDto dto = visitorService.updateVisitor(visitorId, visitorRequestDto);
+        return ResponseEntity.ok(dto);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Integer visitorId) {
+        visitorService.deleteVisitor(visitorId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<VisitorResponseDto>> search(@RequestParam String query) {
+        List<VisitorResponseDto> response = visitorService.searchVisitors(query);
+        return ResponseEntity.ok(response);
+    }
+}

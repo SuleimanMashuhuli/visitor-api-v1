@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: visitor-api
+    
+  profiles:
+    active: dev
+
+server:
+  port: 8094

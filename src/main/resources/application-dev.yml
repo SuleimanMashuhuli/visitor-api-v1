@@ -1,0 +1,49 @@
+server:
+  port: 8094
+
+spring:
+# ============ JPA CONFIGURATION ============
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+# ============ DATABASE CONFIGURATION ============
+  datasource:
+    username: visitor
+    password: root
+    url: jdbc:postgresql://localhost:5432/visitor_db
+    driver-class-name: org.postgresql.Driver
+
+
+# ============ EMAIL CONFIGURATION ============
+  mail:
+    host: 172.16.2.60
+
+# ============ CACHING CONFIGURATION ============
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600s
+
+
+# ============ REDIS CONFIGURATION ============
+  data:
+    redis:
+      host: 10.60.30.6
+      port: 6379
+      password: 123456
+      repositories:
+        enabled: false
+
+# ============ JWT CONFIGURATION ============
+app:
+  jwt:
+    secret: my-super-secret-key-for-development-only
+    expiration: 86400000
+
+
+
+# JWT TOKENIZATION
+# -----jwt.Sectret
+# -----jwt.expiration-ms
