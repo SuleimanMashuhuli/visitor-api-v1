@@ -1,6 +1,7 @@
 package com.abcbank.visitor.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,4 +13,7 @@ public interface VisitorRepository extends JpaRepository<Visitor,Integer> {
 
     @Query("SELECT v FROM Visitor v WHERE v.firstName LIKE :query OR v.lastName LIKE :query OR v.phoneNumber LIKE :query OR v.email LIKE :query OR v.idNumber LIKE :query")
     List<Visitor> search(@Param("query") String query);
+
+    Optional<Visitor> findByIdNumber(String idNumber);
+    Optional<Visitor> findByEmail(String email);
 }

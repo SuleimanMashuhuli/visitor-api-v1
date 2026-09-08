@@ -35,10 +35,10 @@ public class Visit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String hostEmployeeId;
     private String hostEmail;
     private String hostName;
     private String purpose;
+    private Integer durationMinutes;
     private LocalDateTime scheduledAt;
     private LocalDateTime checkInAt;
     private LocalDateTime checkOutAt;

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.abcbank.visitor.domain.enums.VisitStatus;
 
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,10 +18,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class VisitResponseDto {
     private int id;
-    private String hostEmployeeId;
     private String hostEmail;
     private String hostName;
     private String purpose;
+    @Positive private Integer durationMinutes;
     private LocalDateTime scheduledAt;
     private LocalDateTime checkInAt;
     private LocalDateTime checkOutAt;

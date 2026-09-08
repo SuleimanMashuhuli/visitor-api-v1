@@ -34,25 +34,25 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public NotificationResponseDto createNotification(Integer visitId) {
+        return buildNotification(visitId, "ARRIVAL_ALERT",
+                "Visitor check-in",
+                "Your visitor has checked in at the branch.");
+    }
+
+    private NotificationResponseDto buildNotification(Integer visitId, String type, String subject, String message) {
         Visit visit = visitRepository.findById(visitId)
                 .orElseThrow(() -> new EntityNotFoundException("Visit not found with id: " + visitId));
 
         Notification notification = Notification.builder()
                 .recipientEmail(visit.getHostEmail())
-                .subject("Visitor check-in")
-                .message("Your visitor has checked in at the branch.")
-                .notificationType("EMAIL")
+                .subject(subject)
+                .message(message)
+                .notificationType(type)
                 .status(NotificationStatus.PENDING)
                 .visit(visit)
                 .build();
 
         return systemMapper.toResponseDto(notificationRepository.save(notification));
-
-        // emailService.sendEmail(
-        //     saved.getRecipientEmail(),
-        //     saved.getSubject(),
-        //     saved.getMessage()
-        // );
     }
 
     @Override

@@ -13,6 +13,9 @@ import com.abcbank.visitor.domain.entities.Visitor;
 import com.abcbank.visitor.domain.enums.VisitStatus;
 import com.abcbank.visitor.mappers.VisitMapper;
 import com.abcbank.visitor.repositories.VisitRepository;
+import com.abcbank.visitor.repositories.VisitorRepository;
+import com.abcbank.visitor.services.AuditLogService;
+import com.abcbank.visitor.services.NotificationService;
 import com.abcbank.visitor.services.VisitService;
 import com.abcbank.visitor.services.VisitorService;
 
@@ -26,13 +29,53 @@ public class VisitServiceImpl implements VisitService{
     private final VisitMapper visitMapper;
     private final VisitRepository visitRepository;
     private final VisitorService visitorService;
+    private final NotificationService notificationService;
+    private final AuditLogService auditLogService;
+    private final VisitorRepository visitorRepository;
 
     @Override
     public VisitResponseDto createVisit(VisitRequestDto visitRequestDto) {
+        Visitor visitor = resolveVisitor(visitRequestDto);
+
         Visit visit = visitMapper.toEntity(visitRequestDto);
+        visit.setVisitor(visitor);
+        visit.setStatus(VisitStatus.PENDING);
         Visit saveVisit = visitRepository.save(visit);
+
+        auditLogService.recordEvent("VISIT_CREATE", "Visit scheduled", "VISIT", saveVisit.getId());
         return visitMapper.toResponseDto(saveVisit);
     }
+
+
+    private Visitor resolveVisitor(VisitRequestDto visitRequestDto) {
+        if (visitRequestDto.getVisitorId() != 0) {
+            return visitorRepository.findById(visitRequestDto.getVisitorId())
+                    .orElseThrow(() -> new EntityNotFoundException("Visitor not found with id: " + visitRequestDto.getVisitorId()));
+        }
+        if (visitRequestDto.getIdNumber() != null && !visitRequestDto.getIdNumber().isBlank()) {
+            return visitorRepository.findByIdNumber(visitRequestDto.getIdNumber())
+                    .orElseGet(() -> createVisitor(visitRequestDto));
+        }
+        if (visitRequestDto.getEmail() != null && !visitRequestDto.getEmail().isBlank()) {
+            return visitorRepository.findByEmail(visitRequestDto.getEmail())
+                    .orElseGet(() -> createVisitor(visitRequestDto));
+        }
+        return createVisitor(visitRequestDto);
+    }
+
+    private Visitor createVisitor(VisitRequestDto visitRequestDto) {
+        Visitor visitor = Visitor.builder()
+                .firstName(visitRequestDto.getFirstName())
+                .lastName(visitRequestDto.getLastName())
+                .email(visitRequestDto.getEmail())
+                .phoneNumber(visitRequestDto.getPhoneNumber())
+                .idType(visitRequestDto.getIdType())
+                .idNumber(visitRequestDto.getIdNumber())
+                .organization(visitRequestDto.getOrganization())
+                .build();
+        return visitorRepository.save(visitor);
+    }
+
 
     @Override 
     public VisitResponseDto getVisit(Integer visitId) {
@@ -93,7 +136,7 @@ public class VisitServiceImpl implements VisitService{
         Visit visit = visitRepository.findById(visitId)
                 .orElseThrow(() ->
                     new EntityNotFoundException(
-                        "Visit by this ID has not been checked-in: " + visitId
+                        "Visit not found: " + visitId
                     ));
         if(visit.getStatus() != VisitStatus.APPROVED) {
             throw new IllegalStateException(
@@ -103,7 +146,12 @@ public class VisitServiceImpl implements VisitService{
         visit.setStatus(VisitStatus.CHECKED_IN);
         visit.setCheckInAt(LocalDateTime.now());
         Visit saved = visitRepository.save(visit);
-        return  visitMapper.toResponseDto(saved);
+
+        var arrival = notificationService.createNotification(saved.getId());
+        notificationService.sendNotification(arrival.getId());
+
+        auditLogService.recordEvent("VISIT_CHECK_IN", "Visitor checked in", "VISIT", visitId);
+        return visitMapper.toResponseDto(saved);
     }
 
     @Override 

@@ -15,10 +15,18 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VisitRequestDto {
-    private String hostEmployeeId;
     @NotBlank private String hostEmail;
     private String hostName;
     @NotBlank private String purpose;
+    private Integer durationMinutes;
     private LocalDateTime scheduledAt; 
     private int visitorId;
+
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String phoneNumber;
+    private String idType;
+    private String idNumber;
+    private String organization;
 }

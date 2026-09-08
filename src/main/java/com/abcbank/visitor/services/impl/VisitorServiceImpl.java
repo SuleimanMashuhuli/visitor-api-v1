@@ -11,6 +11,7 @@ import com.abcbank.visitor.domain.entities.Visitor;
 import com.abcbank.visitor.mappers.VisitorMapper;
 import com.abcbank.visitor.repositories.VisitorRepository;
 import com.abcbank.visitor.services.VisitorService;
+import com.abcbank.visitor.utils.MaskingUtil;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class VisitorServiceImpl implements VisitorService {
         return visitors
                 .stream()
                 .map(visitorMapper::toResponseDto)
+                .map(this::maskSensitiveData)
                 .toList();
     }
 
@@ -71,8 +73,10 @@ public class VisitorServiceImpl implements VisitorService {
 
     @Override
     public List<VisitorResponseDto> searchVisitors(String query) {
-        List<Visitor> visitors = visitorRepository.search("%" + query + "%");
-        return visitorMapper.toResponseDtoList(visitors);
+        return visitorMapper.toResponseDtoList(visitorRepository.search("%" + query + "%"))
+                .stream()
+                .map(this::maskSensitiveData)
+                .toList();
     }
 
     @Override
@@ -86,5 +90,11 @@ public class VisitorServiceImpl implements VisitorService {
         visitor.setIdType(null);
         visitor.setIdNumber(null);
         visitorRepository.save(visitor);
+    }
+
+    private VisitorResponseDto maskSensitiveData(VisitorResponseDto dto) {
+        dto.setPhoneNumber(MaskingUtil.mask(dto.getPhoneNumber()));
+        dto.setIdNumber(MaskingUtil.mask(dto.getIdNumber()));
+        return dto;
     }
 }
