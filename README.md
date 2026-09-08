@@ -97,7 +97,7 @@
             Add Swagger/OpenAPI
             Create Flyway/Liquibase database migrations
             Add database indexes and constraints
-            
+
             Add unit tests
             Add repository tests
             Add service tests
@@ -125,22 +125,3 @@
             Go live
             Monitor, maintain, and release future improvements
 
-
-
-===============================================================================================
-
-Phase C — Close the BRD feature gaps (~+15%)
-
-12. Dashboard / occupancy service — countByStatus, active-visitors, occupancy-by-branch queries + a Dashbo
-13. Data privacy — anonymize visitor PII on checkout, expose "active visitors only" queries, retention/deletion policy.
-14. Configure spring.mail — real host/port/credentials (currently only host: 172.16.2.60, no port/auth), s
-
-===============================================================================================
-
-Phase D — Production hardening (~+15%)
-
-15. Flyway migrations — replace ddl-auto: update with a V1 baseline + validate.
-16. Tests — service tests, @WebMvcTest controller tests, security tests, and Testcontainers integration (Postgres + Redis).
-17. Observability — spring-boot-starter-actuator (health/metrics) + structured logging.
-18. Transport/encryption — HTTPS/TLS termination + encryption-at-rest config (mostly a deployment concern).
-19. Deployment — private-cloud config with redundancy/autoscaling (replace the dev-only docker-compose.yam
