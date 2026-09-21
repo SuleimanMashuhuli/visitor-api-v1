@@ -7,5 +7,4 @@ public enum VisitStatus {
     INSIDE,
     CHECKED_IN,
     CHECKED_OUT,
-    CANCELLED,
 }

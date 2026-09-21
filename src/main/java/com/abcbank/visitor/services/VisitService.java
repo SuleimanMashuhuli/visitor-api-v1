@@ -10,8 +10,6 @@ public interface VisitService {
     VisitResponseDto getVisit(Integer visitId);
     List<VisitResponseDto> getAllVisits();
     VisitResponseDto updateVisit(Integer visitId, VisitRequestDto visitRequestDto);
-    VisitResponseDto approveVisit(Integer visitId);
-    VisitResponseDto rejectVisit(Integer visitId);
     VisitResponseDto checkIn(Integer visitId);
     VisitResponseDto checkOut(Integer visitId);
     List<VisitResponseDto> getActiveVisits();

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.abcbank.visitor.domain.dto.UserRequestDto;
 import com.abcbank.visitor.domain.dto.UserResponseDto;
+import com.abcbank.visitor.domain.dto.Auth.ChangePasswordRequestDto;
 
 public interface UserService {
     UserResponseDto createUser(UserRequestDto userRequestDto);
@@ -11,10 +12,5 @@ public interface UserService {
     List<UserResponseDto> getAllUsers();
     UserResponseDto updateUser(Integer userId, UserRequestDto userRequestDto);
     void deleteUser(Integer userId);
-
-    UserResponseDto assignRole(Integer userId, Integer roleId);
-    UserResponseDto removeRole(Integer userId, Integer roleId);
-
-    UserResponseDto assignToBranch(Integer userId, Integer branchId);
-    // UserResponseDto removeFromBranch(Integer userId, Integer branchId);
+    void changePassword(String username, ChangePasswordRequestDto dto);
 }

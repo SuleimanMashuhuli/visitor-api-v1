@@ -1,27 +1,25 @@
 package com.abcbank.visitor.domain.dto;
 
-import java.util.Set;
-
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRequestDto {
     private String employeeId;
-    @NotBlank private String username;
+    @NotBlank
+    private String username;
     private String firstName;
     private String lastName;
-    @NotBlank private String email;
+    @Email 
+    private String email;
     private String phoneNumber;
-    @NotBlank private String password;
-    private Set<Integer> roleIds;
-    private int branchId;
+    private String role;
+    private String branch;
 }

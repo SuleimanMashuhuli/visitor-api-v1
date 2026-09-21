@@ -42,6 +42,6 @@ public class AuditLog {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "branch_id")
+    @JoinColumn(name = "branch")
     private Branch branch;
 }

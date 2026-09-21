@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.abcbank.visitor.domain.dto.BranchResponseDto;
 import com.abcbank.visitor.domain.entities.Branch;
+import com.abcbank.visitor.domain.enums.BranchName;
 import com.abcbank.visitor.mappers.AdminMapper;
 import com.abcbank.visitor.repositories.BranchRepository;
 import com.abcbank.visitor.services.BranchService;
@@ -28,9 +29,9 @@ public class BranchServiceImpl implements BranchService {
     }
 
     @Override
-    public BranchResponseDto getBranch(Integer branchId) {
-        Branch branch = branchRepository.findById(branchId)
-                .orElseThrow(() -> new EntityNotFoundException("Branch not found with id: " + branchId));
+    public BranchResponseDto getBranch(BranchName branchName) {
+        Branch branch = branchRepository.findById(branchName)
+                .orElseThrow(() -> new EntityNotFoundException("Branch not found with id: " + branchName));
         return adminMapper.toResponseDto(branch);
     }
 }

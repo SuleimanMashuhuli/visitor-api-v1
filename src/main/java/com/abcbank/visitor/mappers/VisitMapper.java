@@ -15,9 +15,8 @@ public interface VisitMapper {
     Visit toEntity(VisitRequestDto visitRequestDto);
     void updateEntity(VisitRequestDto visitRequestDto, @MappingTarget Visit visit);
 
-    @Mapping(source = "visitor.id", target = "visitorId")
-    @Mapping(source = "branch.id", target = "branchId")
-    @Mapping(source = "branch.branch", target = "branchName")
+    @Mapping(source = "visitor", target = "visitor")
+    @Mapping(source = "branch.branch", target = "branch")
     @Mapping(source = "createdBy.id", target = "createdBy")
     @Mapping(source = "createdBy.username", target = "createdByUsername")
     VisitResponseDto toResponseDto(Visit visit);

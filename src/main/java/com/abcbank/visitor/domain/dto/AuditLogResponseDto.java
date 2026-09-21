@@ -2,14 +2,14 @@ package com.abcbank.visitor.domain.dto;
 
 import java.time.LocalDateTime;
 
+import com.abcbank.visitor.domain.enums.BranchName;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,6 +20,6 @@ public class AuditLogResponseDto {
     private String entityType;
     private int entityId;
     private int userId;
-    private int branchId;
+    private BranchName branchName;
     private LocalDateTime createdAt;
 }

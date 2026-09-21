@@ -1,20 +1,20 @@
 package com.abcbank.visitor.domain.entities;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import com.abcbank.visitor.domain.enums.BranchName;
+import com.abcbank.visitor.domain.enums.RoleName;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,30 +41,19 @@ public class User {
     private String email;
     private String phoneNumber;
     private String password;
+    @Enumerated(EnumType.STRING)
+    private RoleName roleName;
     @Builder.Default
     private boolean active = true;
+    @Builder.Default
+    private boolean passwordChangeRequired = true;
     private LocalDateTime lastLoginAt;
     @CreatedDate
     private LocalDateTime createdAt;
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @ManyToMany
-    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "branch_id", nullable = false)
-    private Branch branch;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BranchName branch;
 }
-
-
-// User
-//  │
-//  ├── Roles
-//  │     ├── SECURITY_OFFICER
-//  │     └── SECURITY_ADMIN
-//  │
-//  └── Branches
-//        ├── Nairobi
-//        └── Mombasa

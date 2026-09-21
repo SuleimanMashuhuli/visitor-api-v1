@@ -15,7 +15,6 @@ import com.abcbank.visitor.mappers.VisitMapper;
 import com.abcbank.visitor.repositories.VisitRepository;
 import com.abcbank.visitor.repositories.VisitorRepository;
 import com.abcbank.visitor.services.AuditLogService;
-import com.abcbank.visitor.services.NotificationService;
 import com.abcbank.visitor.services.VisitService;
 import com.abcbank.visitor.services.VisitorService;
 
@@ -29,7 +28,6 @@ public class VisitServiceImpl implements VisitService{
     private final VisitMapper visitMapper;
     private final VisitRepository visitRepository;
     private final VisitorService visitorService;
-    private final NotificationService notificationService;
     private final AuditLogService auditLogService;
     private final VisitorRepository visitorRepository;
 
@@ -110,28 +108,6 @@ public class VisitServiceImpl implements VisitService{
     }
 
     @Override 
-    public VisitResponseDto approveVisit(Integer visitId) {
-        Visit visit = visitRepository.findById(visitId)
-                .orElseThrow(() ->
-                    new EntityNotFoundException("Visit by this ID has not been approved: " + visitId));
-        visit.setStatus(VisitStatus.APPROVED);
-        Visit saved = visitRepository.save(visit);
-        return  visitMapper.toResponseDto(saved);
-    }
-
-    @Override 
-    public VisitResponseDto rejectVisit(Integer visitId) {
-        Visit visit = visitRepository.findById(visitId)
-                .orElseThrow(() ->
-                    new EntityNotFoundException(
-                        "Visit by this ID has not been rejected: " + visitId
-                    ));
-        visit.setStatus(VisitStatus.REJECTED);
-        Visit saved = visitRepository.save(visit);
-        return  visitMapper.toResponseDto(saved);
-    }
-
-    @Override 
     public VisitResponseDto checkIn(Integer visitId) {
         Visit visit = visitRepository.findById(visitId)
                 .orElseThrow(() ->
@@ -146,9 +122,6 @@ public class VisitServiceImpl implements VisitService{
         visit.setStatus(VisitStatus.CHECKED_IN);
         visit.setCheckInAt(LocalDateTime.now());
         Visit saved = visitRepository.save(visit);
-
-        var arrival = notificationService.createNotification(saved.getId());
-        notificationService.sendNotification(arrival.getId());
 
         auditLogService.recordEvent("VISIT_CHECK_IN", "Visitor checked in", "VISIT", visitId);
         return visitMapper.toResponseDto(saved);

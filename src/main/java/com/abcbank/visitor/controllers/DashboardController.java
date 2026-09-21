@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/dashboard")
 @RequiredArgsConstructor
-@RolesAllowed({"SYSTEM_ADMIN", "SECURITY_ADMIN", "SECURITY_OFFICER"})
+@RolesAllowed({"ADMIN", "USER"})
 public class DashboardController {
 
     private final DashboardService dashboardService;

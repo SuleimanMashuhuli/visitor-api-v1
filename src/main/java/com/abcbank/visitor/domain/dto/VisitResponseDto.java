@@ -7,12 +7,10 @@ import com.abcbank.visitor.domain.enums.VisitStatus;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,14 +19,14 @@ public class VisitResponseDto {
     private String hostEmail;
     private String hostName;
     private String purpose;
-    @Positive private Integer durationMinutes;
+    @Positive 
+    private Integer durationMinutes;
     private LocalDateTime scheduledAt;
     private LocalDateTime checkInAt;
     private LocalDateTime checkOutAt;
     private VisitStatus status;
-    private int visitorId;
-    private int branchId;
-    private String branchName;
+    private VisitorResponseDto visitor;
+    private String branch;
     private int createdBy;
     private String createdByUsername;
     private LocalDateTime createdAt;

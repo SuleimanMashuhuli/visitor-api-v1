@@ -13,12 +13,14 @@ import com.abcbank.visitor.domain.entities.User;
 public interface UserMapper {
 
     @Mapping(target = "branch", ignore = true)
-    @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "roleName", ignore = true)
     User toEntity(UserRequestDto userRequestDto);
 
     @Mapping(target = "branch", ignore = true)
-    @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "roleName", ignore = true)
     void updateEntity(UserRequestDto userRequestDto, @MappingTarget User user);
 
+    @Mapping(source = "roleName", target = "role")
+    @Mapping(source = "branch", target = "branch")
     UserResponseDto toResponseDto(User user);
 }

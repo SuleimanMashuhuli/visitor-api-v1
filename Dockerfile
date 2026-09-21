@@ -1,5 +1,5 @@
 ARG VERSION=0.0.1-SNAPSHOT
-FROM openjdk-17-jdk-slim
+FROM eclipse-temurin:17-jdk-jammy
 LABEL maintainer="suleiman.mashuhuli@abcthebank.com"
 WORKDIR /app
 COPY target/visitor-api-0.0.1-SNAPSHOT.jar ./

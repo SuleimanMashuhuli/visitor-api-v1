@@ -51,7 +51,7 @@ public class Visit {
     private Visitor visitor;
     
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "branch_id", nullable = false)
+    @JoinColumn(name = "branch", nullable = false)
     private Branch branch;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -62,11 +62,3 @@ public class Visit {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 }
-
-
-
-// visitor_id              ForeignKey → visitors
-// branch_id               ForeignKey → branches
-
-// status                  Enum
-// created_by              ForeignKey → users

@@ -1,44 +1,56 @@
 package com.abcbank.visitor.services.impl;
 
-import java.util.HashSet;
+import java.security.SecureRandom;
 import java.util.List;
-import java.util.Set;
+import java.util.Locale;
 
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.abcbank.visitor.domain.dto.UserRequestDto;
 import com.abcbank.visitor.domain.dto.UserResponseDto;
-import com.abcbank.visitor.domain.entities.Branch;
-import com.abcbank.visitor.domain.entities.Role;
+import com.abcbank.visitor.domain.dto.Auth.ChangePasswordRequestDto;
 import com.abcbank.visitor.domain.entities.User;
+import com.abcbank.visitor.domain.enums.BranchName;
 import com.abcbank.visitor.mappers.UserMapper;
-import com.abcbank.visitor.repositories.BranchRepository;
-import com.abcbank.visitor.repositories.RoleRepository;
 import com.abcbank.visitor.repositories.UserRepository;
+import com.abcbank.visitor.services.EmailService;
 import com.abcbank.visitor.services.UserService;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
-@Service 
-@RequiredArgsConstructor 
-@Transactional 
+@Service
+@RequiredArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService {
+
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final BranchRepository branchRepository;
+    private final EmailService emailService;
     private final UserMapper userMapper;
 
     @Override
     public UserResponseDto createUser(UserRequestDto dto) {
         User user = userMapper.toEntity(dto);
-        user.setBranch(resolveBranch(dto.getBranchId()));
-        user.setRoles(resolveRoles(dto.getRoleIds()));
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userMapper.toResponseDto(userRepository.save(user));
+
+        String tempPassword = generateTemporaryPassword();
+
+        user.setPassword(passwordEncoder.encode(tempPassword));
+        user.setPasswordChangeRequired(true);
+        user.setBranch(parseBranch(dto.getBranch()));
+
+        User savedUser = userRepository.save(user);
+
+        emailService.sendTemporaryPassword(
+                savedUser.getEmail(),
+                savedUser.getUsername(),
+                tempPassword
+        );
+
+        return userMapper.toResponseDto(savedUser);
     }
 
     @Override
@@ -48,7 +60,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserResponseDto> getAllUsers() {
-        return userRepository.findAll().stream()
+        return userRepository.findAll()
+                .stream()
                 .map(userMapper::toResponseDto)
                 .toList();
     }
@@ -56,16 +69,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto updateUser(Integer userId, UserRequestDto dto) {
         User user = findUser(userId);
+
         userMapper.updateEntity(dto, user);
-        if (dto.getBranchId() != 0) {
-            user.setBranch(resolveBranch(dto.getBranchId()));
+
+        if (dto.getBranch() != null) {
+            user.setBranch(parseBranch(dto.getBranch()));
         }
-        if (dto.getRoleIds() != null) {
-            user.setRoles(resolveRoles(dto.getRoleIds()));
-        }
-        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-            user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        }
+
         return userMapper.toResponseDto(userRepository.save(user));
     }
 
@@ -74,53 +84,74 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(findUser(userId));
     }
 
-    @Override
-    public UserResponseDto assignRole(Integer userId, Integer roleId) {
-        User user = findUser(userId);
-        Role role = roleRepository.findById(roleId)
-                .orElseThrow(() -> new EntityNotFoundException("Role not found with id: " + roleId));
-        user.getRoles().add(role);
-        return userMapper.toResponseDto(userRepository.save(user));
-    }
-
-    @Override
-    public UserResponseDto removeRole(Integer userId, Integer roleId) {
-        User user = findUser(userId);
-        user.getRoles().removeIf(role -> role.getId() == roleId);
-        return userMapper.toResponseDto(userRepository.save(user));
-    }
-
-    @Override
-    public UserResponseDto assignToBranch(Integer userId, Integer branchId) {
-        User user = findUser(userId);
-        user.setBranch(resolveBranch(branchId));
-        return userMapper.toResponseDto(userRepository.save(user));
-    }
-
-    // @Override
-    // public UserResponseDto removeFromBranch(Integer userId, Integer branchId) {
-    //     User user = findUser(userId);
-    //     if (user.getBranch() != null && user.getBranch().getId() == branchId) {
-    //         user.setBranch(null);
-    //     }
-    //     return userMapper.toResponseDto(userRepository.save(user));
-    // }
-
-
     private User findUser(Integer userId) {
-    return userRepository.findById(userId)
-            .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+        return userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "User not found with id: " + userId
+                        )
+                );
     }
 
-    private Branch resolveBranch(int branchId) {
-        return branchRepository.findById(branchId)
-                .orElseThrow(() -> new EntityNotFoundException("Branch not found with id: " + branchId));
-    }
-
-    private Set<Role> resolveRoles(Set<Integer> roleIds) {
-        if (roleIds == null || roleIds.isEmpty()) {
-            return new HashSet<>();
+    private BranchName parseBranch(String branch) {
+        try {
+            return BranchName.valueOf(branch.trim().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(
+                    "Invalid branch: " + branch
+            );
         }
-        return new HashSet<>(roleRepository.findAllById(roleIds));
+    }
+
+    private String generateTemporaryPassword() {
+        String characters =
+                "ABCDEFGHJKLMNPQRSTUVWXYZ" +
+                "abcdefghijkmnopqrstuvwxyz" +
+                "123456789" +
+                "@#$%";
+
+        SecureRandom random = new SecureRandom();
+
+        StringBuilder password = new StringBuilder();
+
+        for (int i = 0; i < 10; i++) {
+            password.append(
+                    characters.charAt(
+                            random.nextInt(characters.length())
+                    )
+            );
+        }
+
+        return password.toString();
+    }
+
+    @Override
+    public void changePassword(
+            String username,
+            ChangePasswordRequestDto dto) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "User not found: " + username
+                        )
+                );
+
+        if (!passwordEncoder.matches(
+                dto.getCurrentPassword(),
+                user.getPassword())) {
+
+            throw new BadCredentialsException(
+                    "Current password is incorrect"
+            );
+        }
+
+        user.setPassword(
+                passwordEncoder.encode(dto.getNewPassword())
+        );
+
+        user.setPasswordChangeRequired(false);
+
+        userRepository.save(user);
     }
 }

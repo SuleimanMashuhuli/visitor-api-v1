@@ -21,16 +21,19 @@ import com.abcbank.visitor.services.VisitorService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController 
 @RequestMapping(path = "/api/v1/visitors")
 @RequiredArgsConstructor 
-@RolesAllowed({"SYSTEM_ADMIN", "SECURITY_ADMIN", "SECURITY_OFFICER"})
+@RolesAllowed({"ADMIN", "USER"})
+@Slf4j 
 public class VisitorController {
     private final VisitorService visitorService;
 
     @PostMapping 
     public ResponseEntity<VisitorResponseDto> create(@Valid @RequestBody VisitorRequestDto visitorRequestDto) {
+        log.info("=============================== Creating-VisitorRequestDto: {}", visitorRequestDto);
         VisitorResponseDto responseDto = visitorService.createVisitor(visitorRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
@@ -41,19 +44,20 @@ public class VisitorController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{visitorId}")
     public ResponseEntity<VisitorResponseDto> get(@PathVariable Integer visitorId) {
         VisitorResponseDto responseDto = visitorService.getVisitor(visitorId);
         return ResponseEntity.ok(responseDto);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<VisitorResponseDto> update(@PathVariable Integer visitorId, @RequestBody VisitorRequestDto visitorRequestDto) {
+    @PutMapping("/{visitorId}")
+    public ResponseEntity<VisitorResponseDto> update(@PathVariable Integer visitorId, @Valid @RequestBody VisitorRequestDto visitorRequestDto) {
+        log.info("=============================== Updating-VisitorRequestDto: {}", visitorRequestDto);
         VisitorResponseDto dto = visitorService.updateVisitor(visitorId, visitorRequestDto);
         return ResponseEntity.ok(dto);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{visitorId}")
     public ResponseEntity<Void> delete(@PathVariable Integer visitorId) {
         visitorService.deleteVisitor(visitorId);
         return ResponseEntity.noContent().build();

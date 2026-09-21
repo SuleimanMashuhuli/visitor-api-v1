@@ -5,8 +5,35 @@ services:
     container_name: visitor-api
     restart: always
     network_mode: host
-    ports:
-      - "8094:8094"
-    voliumes:
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5434/visitor_db
+      SPRING_DATASOURCE_USERNAME: visitor
+      SPRING_DATASOURCE_PASSWORD: root
+    volumes:
       - /var/logs:/logs
       - /tmp:/tmp
+
+  db:
+    image: postgres:14-alpine
+    container_name: visitor-db
+    restart: always
+    environment:
+      POSTGRES_DB: visitor_db
+      POSTGRES_USER: visitor
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5434:5432"
+    volumes:
+      - visitor-postgres-data:/var/lib/postgresql/data
+    healthcheck: 
+      test: ["CMD-SHELL", "pg_isready -U visitor -d visitor_db"] 
+      interval: 5s 
+      timeout: 5s 
+      retries: 10 
+      start_period: 10s
+
+volumes:
+  visitor-postgres-data:

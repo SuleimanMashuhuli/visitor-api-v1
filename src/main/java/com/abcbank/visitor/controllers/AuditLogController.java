@@ -17,17 +17,17 @@ import lombok.RequiredArgsConstructor;
 @RestController 
 @RequestMapping(path = "/api/v1/audit-logs")
 @RequiredArgsConstructor 
-@RolesAllowed({"SYSTEM_ADMIN", "SECURITY_ADMIN"})
+@RolesAllowed({"ADMIN"})
 public class AuditLogController {
     private final AuditLogService auditLogService;
 
-    @GetMapping
+    @GetMapping("/{auditLogId}")
     public ResponseEntity<AuditLogResponseDto> get(@PathVariable Integer auditLogId) {
         AuditLogResponseDto res = auditLogService.getAuditLog(auditLogId);
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping
     public ResponseEntity<List<AuditLogResponseDto>> getAll() {
         List<AuditLogResponseDto> response = auditLogService.getAllAuditLogs();
         return ResponseEntity.ok(response);
@@ -39,7 +39,7 @@ public class AuditLogController {
         return ResponseEntity.ok(dto);
     }
 
-    @GetMapping("/entity/{type}/{id}")
+    @GetMapping("/entity/{type}/{entityId}")
     public ResponseEntity<List<AuditLogResponseDto>> getLogEntity(@PathVariable String entityType, @PathVariable Integer entityId) {
         List<AuditLogResponseDto> dtoRes = auditLogService.getAuditLogsByEntity(entityType, entityId);
         return ResponseEntity.ok(dtoRes);
