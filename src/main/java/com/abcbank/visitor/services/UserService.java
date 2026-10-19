@@ -12,5 +12,6 @@ public interface UserService {
     List<UserResponseDto> getAllUsers();
     UserResponseDto updateUser(Integer userId, UserRequestDto userRequestDto);
     void deleteUser(Integer userId);
-    void changePassword(String username, ChangePasswordRequestDto dto);
+    void changePassword(String email, ChangePasswordRequestDto dto);
+    void resetPassword(String email);
 }

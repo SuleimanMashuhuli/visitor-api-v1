@@ -23,13 +23,6 @@ public class VisitorServiceImpl implements VisitorService {
     private final VisitorMapper visitorMapper;
 
     @Override
-    public VisitorResponseDto createVisitor(VisitorRequestDto visitorRequestDto) {
-        Visitor visitor = visitorMapper.toEntity(visitorRequestDto);
-        Visitor saveVisitor = visitorRepository.save(visitor);
-        return visitorMapper.toResponseDto(saveVisitor);
-    }
-
-    @Override
     public List<VisitorResponseDto> getAllVisitors() {
         List<Visitor> visitors = visitorRepository.findAll();
         return visitors
@@ -46,8 +39,7 @@ public class VisitorServiceImpl implements VisitorService {
                         new EntityNotFoundException(
                             "Visitor does not exits with ID: " + visitorId
                         ));
-        return visitorMapper
-                .toResponseDto(visitor);
+        return maskSensitiveData(visitorMapper.toResponseDto(visitor));
     }
 
     @Override
@@ -59,16 +51,8 @@ public class VisitorServiceImpl implements VisitorService {
                     ));
         visitorMapper.updateEntity(visitorRequestDto, visitor);
         Visitor saved = visitorRepository.save(visitor);
-        return visitorMapper
-                .toResponseDto(saved);
-    }
-
-    @Override
-    public void deleteVisitor(Integer visitorId) {
-        if (!visitorRepository.existsById(visitorId)) {
-            throw new EntityNotFoundException("Visitor not found with id: " + visitorId);
-        }
-        visitorRepository.deleteById(visitorId);
+        return maskSensitiveData(visitorMapper
+                .toResponseDto(saved));
     }
 
     @Override

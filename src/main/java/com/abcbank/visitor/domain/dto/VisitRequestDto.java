@@ -16,7 +16,7 @@ public class VisitRequestDto {
     @NotBlank 
     private String hostEmail;
     private String hostName;
-    @NotBlank 
+    private String branchName;
     private String purpose;
     private Integer durationMinutes;
     private LocalDateTime scheduledAt; 

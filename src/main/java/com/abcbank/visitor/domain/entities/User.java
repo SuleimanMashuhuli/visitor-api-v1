@@ -56,4 +56,5 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BranchName branch;
+    private String ntoificationEmail;
 }

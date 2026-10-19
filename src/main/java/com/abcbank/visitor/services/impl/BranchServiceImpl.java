@@ -9,6 +9,7 @@ import com.abcbank.visitor.domain.entities.Branch;
 import com.abcbank.visitor.domain.enums.BranchName;
 import com.abcbank.visitor.mappers.AdminMapper;
 import com.abcbank.visitor.repositories.BranchRepository;
+import com.abcbank.visitor.repositories.UserRepository;
 import com.abcbank.visitor.services.BranchService;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -20,18 +21,31 @@ public class BranchServiceImpl implements BranchService {
 
     private final BranchRepository branchRepository;
     private final AdminMapper adminMapper;
+    private final UserRepository userRepository;
 
     @Override
     public List<BranchResponseDto> getAllBranches() {
         return branchRepository.findAll().stream()
-                .map(adminMapper::toResponseDto)
+                .map(branch -> {
+                    BranchResponseDto dto = adminMapper.toResponseDto(branch);
+                    dto.setUsers(userRepository.countByBranch(branch.getBranch()));
+                    dto.setActive(branch.isActive());
+
+                    return dto;
+                })
                 .toList();
     }
 
     @Override
     public BranchResponseDto getBranch(BranchName branchName) {
-        Branch branch = branchRepository.findById(branchName)
+        Branch branch = branchRepository.findByBranch(branchName)
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with id: " + branchName));
-        return adminMapper.toResponseDto(branch);
+            
+        BranchResponseDto dto = adminMapper.toResponseDto(branch);
+
+        dto.setUsers(userRepository.countByBranch(branch.getBranch()));
+        dto.setActive(branch.isActive());
+
+        return dto;
     }
 }

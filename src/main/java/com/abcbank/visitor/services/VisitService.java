@@ -13,5 +13,8 @@ public interface VisitService {
     VisitResponseDto checkIn(Integer visitId);
     VisitResponseDto checkOut(Integer visitId);
     List<VisitResponseDto> getActiveVisits();
+    VisitResponseDto approveVisit(Integer visitId, String token);
+    VisitResponseDto rejectVisit(Integer visitId, String token);
+    VisitResponseDto inviteVisitor(VisitRequestDto visitRequestDto);
 }
 

@@ -14,34 +14,41 @@ import com.abcbank.visitor.services.AuditLogService;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 
-@RestController 
-@RequestMapping(path = "/api/v1/audit-logs")
-@RequiredArgsConstructor 
-@RolesAllowed({"ADMIN"})
+@RestController
+@RequestMapping("/api/v1/audit-logs")
+@RequiredArgsConstructor
+@RolesAllowed({"ROLE_ADMIN", "ROLE_SUPER_ADMIN"})
 public class AuditLogController {
-    private final AuditLogService auditLogService;
 
-    @GetMapping("/{auditLogId}")
-    public ResponseEntity<AuditLogResponseDto> get(@PathVariable Integer auditLogId) {
-        AuditLogResponseDto res = auditLogService.getAuditLog(auditLogId);
-        return ResponseEntity.ok(res);
-    }
+    private final AuditLogService auditLogService;
 
     @GetMapping
     public ResponseEntity<List<AuditLogResponseDto>> getAll() {
-        List<AuditLogResponseDto> response = auditLogService.getAllAuditLogs();
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(auditLogService.getAllAuditLogs()
+        );
+    }
+
+    @GetMapping("/{auditLogId}")
+    public ResponseEntity<AuditLogResponseDto> get(@PathVariable Integer auditLogId) {
+        return ResponseEntity.ok(auditLogService.getAuditLog(auditLogId)
+        );
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<AuditLogResponseDto>> getLogUser(@PathVariable Integer userId) {
-        List<AuditLogResponseDto> dto = auditLogService.getAuditLogsByUser(userId);
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<List<AuditLogResponseDto>> getByUser(@PathVariable Integer userId) {
+        return ResponseEntity.ok(auditLogService.getAuditLogsByUser(userId)
+        );
     }
 
-    @GetMapping("/entity/{type}/{entityId}")
-    public ResponseEntity<List<AuditLogResponseDto>> getLogEntity(@PathVariable String entityType, @PathVariable Integer entityId) {
-        List<AuditLogResponseDto> dtoRes = auditLogService.getAuditLogsByEntity(entityType, entityId);
-        return ResponseEntity.ok(dtoRes);
+    @GetMapping("/entity/{entityType}}")
+    public ResponseEntity<List<AuditLogResponseDto>> getByEntity(@PathVariable String entityType) {
+        return ResponseEntity.ok(auditLogService.getAuditLogsByEntity(entityType)
+        );
+    }
+
+    @GetMapping("/branch/{branchId}")
+    public ResponseEntity<List<AuditLogResponseDto>> getByBranch(@PathVariable Integer branchId) {
+        return ResponseEntity.ok(auditLogService.getAuditLogsByBranch(branchId)
+        );
     }
 }

@@ -8,6 +8,7 @@ import com.abcbank.visitor.domain.entities.AuditLog;
 
 public interface AuditLogRepository extends JpaRepository<AuditLog, Integer> {
 
-    List<AuditLog> findByUserId(Integer userId);
-    List<AuditLog> findByEntityTypeAndEntityId(String entityType, Integer entityId);
+    List<AuditLog> findByUser_Id(Integer userId);
+    List<AuditLog> findByEntityType(String entityType);
+    List<AuditLog> findByBranch_Id(Integer branchId);
 }

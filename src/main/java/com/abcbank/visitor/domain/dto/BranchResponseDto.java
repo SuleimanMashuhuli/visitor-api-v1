@@ -10,5 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BranchResponseDto {
+    private int id;
     private String name;
+    private long users;
+    private boolean active;
 }

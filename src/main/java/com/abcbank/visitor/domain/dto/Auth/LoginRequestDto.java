@@ -1,5 +1,6 @@
 package com.abcbank.visitor.domain.dto.Auth;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,8 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginRequestDto {
-    @NotBlank 
-    private String username;
+
+    @Email 
+    private String email;
     @NotBlank 
     private String password;
 }

@@ -1,7 +1,5 @@
 package com.abcbank.visitor.domain.dto;
 
-import java.time.LocalDateTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +18,4 @@ public class VisitorResponseDto {
     private String idType;
     private String idNumber;
     private String organization;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

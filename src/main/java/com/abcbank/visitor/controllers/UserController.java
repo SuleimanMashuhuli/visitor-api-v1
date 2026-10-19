@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController 
 @RequestMapping(path = "/api/v1/users")
 @RequiredArgsConstructor 
-@RolesAllowed({"ADMIN"})
+@RolesAllowed({"ADMIN", "SUPER_ADMIN"})
 @Slf4j 
 public class UserController {
     private final UserService userService;

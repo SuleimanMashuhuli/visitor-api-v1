@@ -26,17 +26,10 @@ import lombok.extern.slf4j.Slf4j;
 @RestController 
 @RequestMapping(path = "/api/v1/visitors")
 @RequiredArgsConstructor 
-@RolesAllowed({"ADMIN", "USER"})
+@RolesAllowed({"ADMIN", "USER", "SUPER_ADMIN"})
 @Slf4j 
 public class VisitorController {
     private final VisitorService visitorService;
-
-    @PostMapping 
-    public ResponseEntity<VisitorResponseDto> create(@Valid @RequestBody VisitorRequestDto visitorRequestDto) {
-        log.info("=============================== Creating-VisitorRequestDto: {}", visitorRequestDto);
-        VisitorResponseDto responseDto = visitorService.createVisitor(visitorRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
-    }
 
     @GetMapping 
     public ResponseEntity<List<VisitorResponseDto>> getAll() {
@@ -55,12 +48,6 @@ public class VisitorController {
         log.info("=============================== Updating-VisitorRequestDto: {}", visitorRequestDto);
         VisitorResponseDto dto = visitorService.updateVisitor(visitorId, visitorRequestDto);
         return ResponseEntity.ok(dto);
-    }
-
-    @DeleteMapping("/{visitorId}")
-    public ResponseEntity<Void> delete(@PathVariable Integer visitorId) {
-        visitorService.deleteVisitor(visitorId);
-        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/search")

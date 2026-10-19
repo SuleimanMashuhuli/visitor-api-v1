@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,19 +30,23 @@ public class AuditLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     private String action;
     private String description;
-    @CreatedDate
-    private LocalDateTime createdAt;
     private String entityType;
-    private int entityId;
-
+    private String ipAddress;
+    private LocalDateTime createdAt;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch")
     private Branch branch;
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
 }

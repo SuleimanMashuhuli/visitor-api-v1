@@ -13,6 +13,9 @@ public interface AdminMapper {
     
     Branch toEntity(BranchRequestDto branchRequestDto);
     
+    @Mapping(target = "id", source = "id")
     @Mapping(source = "branch", target = "name")
+    @Mapping(target = "users", ignore = true)
+    @Mapping(target = "active", ignore = true)
     BranchResponseDto toResponseDto(Branch branch);
 }

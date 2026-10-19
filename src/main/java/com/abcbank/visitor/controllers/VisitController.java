@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.abcbank.visitor.domain.dto.VisitRequestDto;
@@ -25,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController 
 @RequestMapping(path = "/api/v1/visits")
 @RequiredArgsConstructor 
-@RolesAllowed({"ADMIN", "USER"})
+@RolesAllowed({"ADMIN", "USER", "SUPER_ADMIN"})
 @Slf4j 
 public class VisitController {
     private final VisitService visitService;
@@ -72,5 +73,20 @@ public class VisitController {
     @GetMapping("/active")
     public ResponseEntity<List<VisitResponseDto>> getActive() {
         return ResponseEntity.ok(visitService.getActiveVisits());
+    }
+    @PatchMapping("/{visitId}/approve")
+    public ResponseEntity<VisitResponseDto> approve(@PathVariable Integer visitId,  @RequestParam String token) {
+        return ResponseEntity.ok(visitService.approveVisit(visitId, token)
+        );
+    }
+    @PatchMapping("/{visitId}/reject")
+    public ResponseEntity<VisitResponseDto> reject(@PathVariable Integer visitId,  @RequestParam String token) {
+        return ResponseEntity.ok(visitService.rejectVisit(visitId, token)
+        );
+    }
+
+    @PostMapping("/invite")
+    public ResponseEntity<VisitResponseDto> inviteVisitor(@RequestBody @Valid VisitRequestDto visitRequestDto) {
+        return ResponseEntity.ok(visitService.inviteVisitor(visitRequestDto));
     }
  }

@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RestController 
 @RequestMapping(path = "/api/v1/branches")
 @RequiredArgsConstructor 
-@RolesAllowed({"ADMIN", "USER"})
+@RolesAllowed({"ADMIN", "SUPER_ADMIN"})
 public class BranchController {
     private final BranchService branchService;
 
